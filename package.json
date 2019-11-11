@@ -1,0 +1,14 @@
+{
+  "name": "trello_clone",
+  "private": true,
+  "dependencies": {
+    "@rails/webpacker": "^4.0.7",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.2",
+    "vue-template-compiler": "^2.6.10",
+    "vuedraggable": "^2.23.2"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.9.0"
+  }
+}
