@@ -1,5 +1,5 @@
 class ListsController < ApplicationController
-  before_action :set_list, only: [:show, :edit, :update, :destroy]
+  before_action :set_list, only: [:show, :edit, :update, :destroy, :move]
 
   # GET /lists
   # GET /lists.json
@@ -21,6 +21,12 @@ class ListsController < ApplicationController
   def edit
   end
 
+  def move
+    # usin acts_as_list gem method
+    @list.insert_at(list_params[:position].to_i)
+    render action: :show
+  end
+  
   # POST /lists
   # POST /lists.json
   def create
