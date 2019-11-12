@@ -1,14 +1,17 @@
 <template>
   <div id="app">
-    <draggable class="row drag-area" v-model="lists" @end="handleEndMove" :options="{group: 'lists'}">
+    <draggable class="row drag-area" v-model="lists" @end="listMove" :options="{group: 'lists'}">
       <template v-for="(item, index) in lists">
         <div :key="index" class="col">
           <h4>{{item.name}}</h4>
           <hr>
-          <template v-for="(card, index) in item.cards" class="card card-body mb-3">
-            <h6 :key="index">{{card.name}}</h6>
-          </template>
-
+          <draggable v-model="item.cards" :options="{group: 'cards'}" @change="cardMove" class="drag-area">
+            <template v-for="(card, index) in item.cards">
+              <div :key="index" class="card card-body mb-3">
+                <h6>{{card.name}}</h6>
+              </div>
+            </template>
+          </draggable>
           <div class="card card-body">
             <textarea v-model="form[item.id]" class="form-control"></textarea>
             <button @click="handleClick(item.id)" class="btn btn-primary">Add</button>
@@ -32,7 +35,30 @@ export default {
     }
   },
   methods: {
-    handleEndMove(e) {
+    cardMove(e) {
+      console.log(e);
+      let evt = e.added || e.moved;
+      if (evt == undefined) { return }
+
+      // de esta manera estamos buscando el id de la lista de donde se ha movido la card
+      const list_index = this.lists.findIndex(list => {
+        return list.cards.find(card => {
+          return card.id == evt.element.id;
+        })
+      })
+
+      let data = new FormData;
+      data.append("card[list_id]", this.lists[list_index].id);
+      data.append("card[position]", evt.newIndex + 1);
+
+      Rails.ajax({
+        url: `/cards/${evt.element.id}/move`,
+        type: "PATCH",
+        data: data,
+        dataType: "json"
+      })
+    },
+    listMove(e) {
       let data = new FormData;
       data.append("list[position]", e.newIndex + 1);
 
